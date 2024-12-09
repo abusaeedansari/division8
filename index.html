@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Division & Fractions Quiz Game</title>
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background-color: #dceeff;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  header {
+    background: #0071bc;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 2em;
+  }
+  .container {
+    max-width: 700px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    padding: 20px;
+    margin-bottom: 40px;
+  }
+  .intro, .quiz-area, .result-area {
+    display: none;
+  }
+  .active {
+    display: block;
+  }
+  .intro p {
+    font-size: 1.2em;
+  }
+  .name-input {
+    margin: 20px 0;
+  }
+  input[type="text"] {
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    font-size: 1.1em;
+  }
+  .button {
+    background: #0071bc;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius:5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin: 5px 0;
+    display: inline-block;
+  }
+  .button:hover {
+    background: #005c94;
+  }
+  .top-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom:20px;
+  }
+  .timer, .scoreboard {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #0071bc;
+  }
+  .question-count {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    text-align:center;
+  }
+  .question-text {
+    margin-bottom: 20px;
+    font-size: 1.3em;
+  }
+  .answers {
+    margin-bottom: 20px;
+  }
+  .answers label {
+    display: block;
+    margin-bottom:10px;
+    font-size:1.2em;
+    cursor: pointer;
+  }
+  .feedback {
+    font-size:1.1em;
+    margin-bottom:20px;
+    padding:10px;
+    border-radius:5px;
+  }
+  .feedback.correct {
+    background:#d5f8d0;
+    border:1px solid #9ed98b;
+  }
+  .feedback.incorrect {
+    background:#fcdcdc;
+    border:1px solid #e5a5a5;
+  }
+  .explanation {
+    font-size:1.1em;
+    margin-bottom:20px;
+  }
+  .hidden {
+    display:none;
+  }
+  .result-area h2 {
+    font-size:1.8em;
+  }
+  .result-area p {
+    font-size:1.2em;
+  }
+  footer {
+    text-align:center;
+    color:#030303;
+    font-size: 32px;
+    margin:20px 0;
+    font-size:1em;
+  }
+
+  /* Responsive styling */
+  @media (max-width: 600px) {
+    .container {
+      margin:10px;
+      padding:15px;
+    }
+    header h1 {
+      font-size:1.8em;
+    }
+    .intro p, .question-text, .answers label {
+      font-size:1.1em;
+    }
+    .timer, .scoreboard {
+      font-size:1.1em;
+    }
+    .button {
+      font-size:1em;
+      padding:10px 16px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Division & Fractions Quiz</h1>
+</header>
+
+<div class="container">
+  <div class="intro active" id="intro">
+    <h2>Welcome!</h2>
+    <p>This quiz will test your understanding of division and fractions. You have 40 questions and a total of 30 minutes (no per-question timer). Each question is worth 10 points. <br> <br>If the time runs out, you will see the results for only the questions you've answered.</p>
+    <p>Enter your name to begin. Good luck!</p>
+    <div class="name-input">
+      <input type="text" id="playerName" placeholder="Your Name" />
+    </div>
+    <button class="button" onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <div class="quiz-area" id="quiz-area">
+    <div class="top-info">
+      <div class="timer" id="timer">Time: 30:00</div>
+      <div class="scoreboard" id="scoreboard">Score: 0</div>
+    </div>
+    <div class="question-count" id="question-count"></div>
+    <div class="question-text" id="question-text"></div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback hidden" id="feedback"></div>
+    <div class="explanation hidden" id="explanation"></div>
+    <button class="button" id="submitBtn" onclick="submitAnswer()">Check Answer</button>
+    <button class="button hidden" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+  </div>
+
+  <div class="result-area" id="result-area">
+    <h2>Quiz Completed!</h2>
+    <p id="final-message"></p>
+    <p id="final-score"></p>
+    <p>Thank you for playing! Keep practicing and have fun learning!</p>
+  </div>
+</div>
+
+<footer>
+  <p>All the best!</p>
+</footer>
+
+<script>
+// Same questions array as previously corrected and verified.
+let questions = [
+
+  // 30 Division Questions
+  {
+    type: "mcq",
+    question: "What is 1,236 ÷ 4?",
+    options: ["308", "309", "310", "300"],
+    correct: 1, // correct: 309
+    explanation: "4 × 309 = 1,236, so 1,236 ÷ 4 = 309."
+  },
+  {
+    type: "mcq",
+    question: "Calculate 945 ÷ 5:",
+    options: ["190", "188", "200", "189"],
+    correct: 3, // correct: 189
+    explanation: "5 × 189 = 945, so 945 ÷ 5 = 189."
+  },
+  {
+    type: "tf",
+    question: "True or False: 2,592 ÷ 9 = 288",
+    options: ["False", "True"],
+    correct: "True",
+    explanation: "9 × 288 = 2,592, so this is correct."
+  },
+  {
+    type: "mcq",
+    question: "Find 1,728 ÷ 8:",
+    options: ["220", "216", "215", "218"],
+    correct: 1, // correct: 216
+    explanation: "8 × 216 = 1,728, so 1,728 ÷ 8 = 216."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: If 1,344 cookies are shared equally among 7 kids, how many cookies does each kid get?",
+    options: ["193", "192", "190", "191"],
+    correct: 1, // correct: 192
+    explanation: "7 × 192 = 1,344, so each kid gets 192 cookies."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: If you have 2,187 seeds and you place them into groups of 3 each, how many groups will you have?",
+    options: ["700", "728", "729", "732"],
+    correct: 2, // correct: 729
+    explanation: "3 × 729 = 2,187, so there are 729 groups."
+  },
+  {
+    type: "tf",
+    question: "True or False: When we divide any number by 1, the quotient is the number itself.",
+    options: ["False", "True"],
+    correct: "True",
+    explanation: "Any number divided by 1 remains the same."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: 2,376 marbles are put into 8 boxes equally. How many marbles per box?",
+    options: ["296", "297", "298", "300"],
+    correct: 1, // correct: 297
+    explanation: "8 × 297 = 2,376, so each box gets 297 marbles."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: 1,575 chocolates are divided equally among 9 friends. How many chocolates does each friend get?",
+    options: ["None of these", "1750", "175 with remainder", "175"],
+    correct: 3, // correct: 175
+    explanation: "9 × 175 = 1,575, so each friend gets 175 chocolates."
+  },
+  {
+    type: "tf",
+    question: "True or False: 0 ÷ 7 = 0",
+    options: ["False", "True"],
+    correct: "True",
+    explanation: "0 divided by any nonzero number is 0."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: If 1,008 oranges are arranged in crates of 6 each, how many crates are filled?",
+    options: ["168", "170", "160", "166"],
+    correct: 0, // correct: 168
+    explanation: "6 × 168 = 1,008, so 168 crates are filled."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: 2,250 apples are put equally into 5 baskets. How many apples per basket?",
+    options: ["400", "225", "450", "500"],
+    correct: 2, // correct: 450
+    explanation: "5 × 450 = 2,250, so each basket gets 450 apples."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: 1,260 pencils are grouped equally into 9 boxes. How many pencils per box?",
+    options: ["139", "135", "140", "126"],
+    correct: 2, // correct: 140
+    explanation: "9 × 140 = 1,260, so each box has 140 pencils."
+  },
+  {
+    type: "tf",
+    question: "True or False: Dividing a number by itself (except 0) gives a quotient of 1.",
+    options: ["False", "True"],
+    correct: "True",
+    explanation: "For any nonzero number n, n ÷ n = 1."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: 1,440 stickers are put equally into 8 packs. How many stickers in each pack?",
+    options: ["200", "160", "180", "144"],
+    correct: 2, // correct: 180
+    explanation: "8 × 180 = 1,440, so each pack gets 180 stickers."
+  },
+  {
+    type: "mcq",
+    question: "What is 2,016 ÷ 7?",
+    options: ["280", "288", "287", "290"],
+    correct: 1, // correct: 288
+    explanation: "7 × 288 = 2,016, so 2,016 ÷ 7 = 288."
+  },
+  {
+    type: "mcq",
+    question: "Find 864 ÷ 6:",
+    options: ["130", "140", "144", "150"],
+    correct: 2, // correct:144
+    explanation: "6 × 144 = 864, so 864 ÷ 6 = 144."
+  },
+  {
+    type: "tf",
+    question: "True or False: When dividing by 100, the remainder is formed by the last two digits of the original number.",
+    options: ["True", "False"],
+    correct: "True",
+    explanation: "Dividing by 100 moves the decimal two places; leftover digits form the remainder if not divisible."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: If you have 3,600 candies and divide them equally among 9 children, how many candies does each child get?",
+    options: ["360", "300", "600", "400"],
+    correct: 3, // correct: 400
+    explanation: "9 × 400 = 3,600, so each child gets 400 candies."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: 1,296 muffins are placed 6 in each box. How many boxes are filled?",
+    options: ["200", "180", "129", "216"],
+    correct: 3, // correct: 216
+    explanation: "6 × 216 = 1,296, so 216 boxes are filled."
+  },
+  {
+    type: "tf",
+    question: "True or False: A number cannot be divided by 0.",
+    options: ["True", "False"],
+    correct: "True",
+    explanation: "Division by zero is undefined."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: 2,700 books are arranged in piles of 10 each. How many piles?",
+    options: ["27", "2700", "270", "100"],
+    correct: 2, // correct: 270
+    explanation: "2,700 ÷ 10 = 270."
+  },
+  {
+    type: "mcq",
+    question: "What is 4,500 ÷ 100?",
+    options: ["450", "45", "4.5", "0"],
+    correct: 1, // correct:45 is second option now, rearrange to make correct indexing
+    // Correction: Let's rearrange options so correct indexing is consistent
+    // We'll make "45" the correct answer at a different index:
+    // Options: "450","45","4.5","0"
+    // correct: we want "45". Let's put "45" at index 1 as stated:
+    // Actually "45" is correct. The problem states 4,500 ÷100=45, correct=1 means second option "45".
+    // It's correct as given.
+    explanation: "4,500 ÷ 100 = 45."
+  },
+  {
+    type: "mcq",
+    question: "What is 2,000 ÷ 1,000?",
+    options: ["20", "200", "2", "0"],
+    correct: 2, // correct: 2
+    explanation: "2,000 ÷ 1,000 = 2."
+  },
+  {
+    type: "tf",
+    question: "True or False: For the fact 5 × 8 = 40, the division facts are 40 ÷ 5 = 8 and 40 ÷ 8 = 5.",
+    options: ["False", "True"],
+    correct: "True",
+    explanation: "These are the correct division facts related to 5 × 8 = 40."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: If 2,772 marbles are divided into 9 equal groups, how many marbles in each group?",
+    options: ["300", "307", "308", "309"],
+    correct: 2, // correct: 308
+    explanation: "9 × 308 = 2,772, so each group has 308 marbles."
+  },
+  {
+    type: "mcq",
+    question: "What is 1,944 ÷ 3?",
+    options: ["700", "650", "600", "648"],
+    correct: 3, // correct: 648
+    explanation: "3 × 648 = 1,944, so 1,944 ÷ 3 = 648."
+  },
+  {
+    type: "tf",
+    question: "True or False: When dividing by 1,000, the remainder is formed by the last three digits of the number if not divisible.",
+    options: ["False", "True"],
+    correct: "True",
+    explanation: "1,000 divides at the thousand's place; leftover digits (if any) form the remainder."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: If 2,016 chocolates are shared equally among 6 kids, how many chocolates does each kid get?",
+    options: ["336", "300", "201", "360"],
+    correct: 0, // correct: 336
+    explanation: "6 × 336 = 2,016, so each kid gets 336 chocolates."
+  },
+  {
+    type: "mcq",
+    question: "Find 1,064 ÷ 4:",
+    options: ["250", "270", "266", "265"],
+    correct: 2, // correct:266
+    explanation: "4 × 266 = 1,064, so 1,064 ÷ 4 = 266."
+  },
+
+  // 10 Fraction Questions
+  {
+    type: "mcq",
+    question: "What is the top number in a fraction called?",
+    options: ["Denominator", "Whole", "Part", "Numerator"],
+    correct: 3, // correct: Numerator
+    explanation: "The top number is the numerator."
+  },
+  {
+    type: "mcq",
+    question: "If a pizza is cut into 4 equal slices and you eat 1 slice, what fraction of the pizza is eaten?",
+    options: ["1/2", "3/4", "4/4", "1/4"],
+    correct: 3, // correct:1/4
+    explanation: "1 out of 4 slices is 1/4."
+  },
+  {
+    type: "tf",
+    question: "True or False: 2/4 is equal to 1/2.",
+    options: ["True", "False"],
+    correct: "True",
+    explanation: "2/4 simplifies to 1/2."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: A rectangular orchard is divided into 4 equal sections: 2 have apple trees, 1 has orange trees, and 1 has peach trees. What fraction has apple trees?",
+    options: ["2/4", "1/4", "3/4", "4/4"],
+    correct: 0, // correct:2/4
+    explanation: "2 out of 4 sections = 2/4."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: Same orchard (4 sections): 1 has orange trees. What fraction is orange?",
+    options: ["2/4", "3/4", "4/4", "1/4"],
+    correct: 3, // correct:1/4
+    explanation: "1 out of 4 sections = 1/4."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: Same orchard: 1 section is peach trees. What fraction is peach?",
+    options: ["1/4", "2/4", "3/4", "0/4"],
+    correct: 0, // correct:1/4
+    explanation: "1 out of 4 = 1/4."
+  },
+  {
+    type: "tf",
+    question: "Scenario: The orchard with 2 apple, 1 orange, 1 peach. True or False: The apple trees alone make up half of the orchard.",
+    options: ["False", "True"],
+    correct: "True",
+    explanation: "2/4 is half."
+  },
+  {
+    type: "mcq",
+    question: "Scenario: In the orchard, orange plus peach together make what fraction?",
+    options: ["1/4", "3/4", "4/4", "2/4"],
+    correct: 3, // correct:2/4
+    explanation: "Orange (1/4) + Peach (1/4) = 2/4."
+  },
+  {
+    type: "mcq",
+    question: "If a shape is divided into 2 equal parts and both parts are shaded, what fraction is shaded?",
+    options: ["1/2", "1/4", "2/4", "2/2"],
+    correct: 3, // correct:2/2
+    explanation: "Shading both halves = 2/2, a whole."
+  },
+  {
+    type: "tf",
+    question: "True or False: 3/4 is greater than 1/2.",
+    options: ["False", "True"],
+    correct: "True",
+    explanation: "3/4 = 0.75 and 1/2 = 0.5, so 3/4 is larger."
+  }
+
+];
+
+
+
+
+// Shuffle the questions array to get them in a random order every time.
+function shuffleQuestions(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+shuffleQuestions(questions);
+
+let currentQuestionIndex = 0;
+let score = 0;
+let playerName = "";
+let totalTime = 30 * 60; // 30 minutes in seconds
+let timerInterval = null;
+let answeredQuestions = 0;
+
+function startQuiz() {
+  const nameInput = document.getElementById("playerName").value.trim();
+  if(!nameInput) {
+    alert("Please enter your name before starting.");
+    return;
+  }
+  playerName = nameInput;
+  document.getElementById("intro").classList.remove("active");
+  document.getElementById("quiz-area").classList.add("active");
+  showQuestion();
+  startTimer();
+}
+
+function startTimer() {
+  const timerEl = document.getElementById("timer");
+  timerInterval = setInterval(()=>{
+    if(totalTime <= 0) {
+      clearInterval(timerInterval);
+      endQuiz();
+      return;
+    }
+    totalTime--;
+    let minutes = Math.floor(totalTime/60);
+    let seconds = totalTime%60;
+    if(seconds<10) seconds = "0"+seconds;
+    timerEl.textContent = "Time: " + minutes+":"+seconds;
+  },1000);
+}
+
+function showQuestion() {
+  let q = questions[currentQuestionIndex];
+  document.getElementById("question-count").textContent = "Question " + (currentQuestionIndex+1) + " of " + questions.length;
+  document.getElementById("question-text").textContent = q.question;
+  let ansDiv = document.getElementById("answers");
+  ansDiv.innerHTML = "";
+  document.getElementById("feedback").classList.add("hidden");
+  document.getElementById("explanation").classList.add("hidden");
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("submitBtn").classList.remove("hidden");
+
+  if(q.type==="mcq") {
+    q.options.forEach((opt,i)=>{
+      let label = document.createElement("label");
+      let inp = document.createElement("input");
+      inp.type="radio";
+      inp.name="answer";
+      inp.value=i;
+      label.appendChild(inp);
+      label.appendChild(document.createTextNode(" "+opt));
+      ansDiv.appendChild(label);
+    });
+  } else if(q.type==="tf") {
+    q.options.forEach(opt=>{
+      let label = document.createElement("label");
+      let inp = document.createElement("input");
+      inp.type="radio";
+      inp.name="answer";
+      inp.value=opt;
+      label.appendChild(inp);
+      label.appendChild(document.createTextNode(" "+opt));
+      ansDiv.appendChild(label);
+    });
+  }
+}
+
+function submitAnswer() {
+  let q = questions[currentQuestionIndex];
+  let userAns = "";
+
+  if(q.type==="mcq" || q.type==="tf") {
+    let radios = document.querySelectorAll('input[name="answer"]');
+    for(let r of radios) {
+      if(r.checked) {
+        userAns = r.value;
+        break;
+      }
+    }
+    if(!userAns) {
+      alert("Please select an answer.");
+      return;
+    }
+  }
+
+  // Evaluate
+  let correct = false;
+  if(q.type==="mcq") {
+    if(parseInt(userAns)===q.correct) {
+      correct = true;
+    }
+  } else {
+    // tf
+    if(userAns === q.correct) correct = true;
+  }
+
+  if(correct) {
+    score +=10;
+  }
+
+  answeredQuestions++;
+
+  // Show feedback
+  let feedbackEl = document.getElementById("feedback");
+  feedbackEl.classList.remove("hidden");
+  feedbackEl.textContent = correct ? "Correct!" : "Incorrect!";
+  feedbackEl.classList.remove("correct","incorrect");
+  feedbackEl.classList.add(correct ? "correct":"incorrect");
+
+  let explanationEl = document.getElementById("explanation");
+  explanationEl.classList.remove("hidden");
+  explanationEl.textContent = "Explanation: " + q.explanation;
+
+  // Update score
+  document.getElementById("scoreboard").textContent = "Score: " + score;
+
+  document.getElementById("submitBtn").classList.add("hidden");
+  document.getElementById("nextBtn").classList.remove("hidden");
+}
+
+function nextQuestion() {
+  currentQuestionIndex++;
+  if(currentQuestionIndex>=questions.length) {
+    endQuiz();
+  } else {
+    showQuestion();
+  }
+}
+
+function endQuiz() {
+  clearInterval(timerInterval);
+  document.getElementById("quiz-area").classList.remove("active");
+  document.getElementById("result-area").classList.add("active");
+
+  let finalMsg = document.getElementById("final-message");
+  finalMsg.textContent = "Great job, " + playerName + "!";
+
+  let finalScore = document.getElementById("final-score");
+  finalScore.textContent = "Your Score: " + score + " out of " + (questions.length*10);
+}
+</script>
+</body>
+</html>
