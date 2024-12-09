@@ -361,13 +361,7 @@ let questions = [
     type: "mcq",
     question: "What is 4,500 ÷ 100?",
     options: ["450", "45", "4.5", "0"],
-    correct: 1, // correct:45 is second option now, rearrange to make correct indexing
-    // Correction: Let's rearrange options so correct indexing is consistent
-    // We'll make "45" the correct answer at a different index:
-    // Options: "450","45","4.5","0"
-    // correct: we want "45". Let's put "45" at index 1 as stated:
-    // Actually "45" is correct. The problem states 4,500 ÷100=45, correct=1 means second option "45".
-    // It's correct as given.
+    correct: 1, // correct:45
     explanation: "4,500 ÷ 100 = 45."
   },
   {
@@ -403,7 +397,7 @@ let questions = [
     question: "True or False: When dividing by 1,000, the remainder is formed by the last three digits of the number if not divisible.",
     options: ["False", "True"],
     correct: "True",
-    explanation: "1,000 divides at the thousand's place; leftover digits (if any) form the remainder."
+    explanation: "1,000 divides at the thousand's place; leftover digits form the remainder."
   },
   {
     type: "mcq",
@@ -451,28 +445,28 @@ let questions = [
   },
   {
     type: "mcq",
-    question: "Scenario: Same orchard (4 sections): 1 has orange trees. What fraction is orange?",
+    question: "Scenario: A rectangular orchard is divided into 4 equal sections: 2 have apple trees, 1 has orange trees, and 1 has peach trees. What fraction is orange?",
     options: ["2/4", "3/4", "4/4", "1/4"],
     correct: 3, // correct:1/4
-    explanation: "1 out of 4 sections = 1/4."
+    explanation: "1 out of 4 = 1/4."
   },
   {
     type: "mcq",
-    question: "Scenario: Same orchard: 1 section is peach trees. What fraction is peach?",
+    question: "Scenario: A rectangular orchard is divided into 4 equal sections: 2 have apple trees, 1 has orange trees, and 1 has peach trees. What fraction is peach?",
     options: ["1/4", "2/4", "3/4", "0/4"],
     correct: 0, // correct:1/4
     explanation: "1 out of 4 = 1/4."
   },
   {
     type: "tf",
-    question: "Scenario: The orchard with 2 apple, 1 orange, 1 peach. True or False: The apple trees alone make up half of the orchard.",
+    question: "Scenario: A rectangular orchard is divided into 4 equal sections: 2 have apple trees, 1 has orange trees, and 1 has peach trees. True or False: The apple trees alone make up half of the orchard.",
     options: ["False", "True"],
     correct: "True",
     explanation: "2/4 is half."
   },
   {
     type: "mcq",
-    question: "Scenario: In the orchard, orange plus peach together make what fraction?",
+    question: "Scenario: A rectangular orchard is divided into 4 equal sections: 2 have apple trees, 1 has orange trees, and 1 has peach trees. In the orchard, orange plus peach together make what fraction?",
     options: ["1/4", "3/4", "4/4", "2/4"],
     correct: 3, // correct:2/4
     explanation: "Orange (1/4) + Peach (1/4) = 2/4."
